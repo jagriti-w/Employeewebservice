@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/v1")
 public interface IEmployeeController {
 	
 	@Autowired
@@ -20,21 +21,50 @@ public interface IEmployeeController {
     }
 
     @GetMapping("/search/{searchString}")
-    ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString);
+    ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString){
+		List<Employee> employee = employeeService.getEmployeesByNameSearch(id);
+		return new ResponseEntity<>(employee, HttpStatus.OK);
+	}
 
     @GetMapping("/{id}")
-    ResponseEntity<Employee> getEmployeeById(@PathVariable String id);
+    ResponseEntity<Employee> getEmployeeById(@PathVariable String id){
+		Employee employee = employeeService.getEmployeeById(id);
+		return new ResponseEntity<>(employee, HttpStatus.OK);
+	}
 
     @GetMapping("/highestSalary")
-    ResponseEntity<Integer> getHighestSalaryOfEmployees();
+    ResponseEntity<Integer> getHighestSalaryOfEmployees(){
+		String result = employeeService.getHighestSalaryOfEmployees();
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
     @GetMapping("/topTenHighestEarningEmployeeNames")
-    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames();
+    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames(){
+		List<Employee> employee = employeeService.getTopTenHighestEarningEmployeeNames();
+		return new ResponseEntity<>(employee, HttpStatus.OK);
+	}
 
     @PostMapping()
-    ResponseEntity<Employee> createEmployee(@RequestBody Map<String, Object> employeeInput);
+    ResponseEntity<Employee> createEmployee(@RequestBody Map<String, Object> employeeInput){
+		String name = (String) employeeInput.get("name");
+		String salary = (String) employeeInput.get("salary");
+		String age = (String) employeeInput.get("age");
+
+        Employee newEmployee = new Employee();
+        newEmployee.setName(name); 
+		newEmployee.setSalary(salary);
+		newEmployee.setAge(age);
+		newEmployee.setProfileImage(profile_image);
+        Employee createdEmployee = employeeService.createEmployee(newEmployee);
+
+		return new ResponseEntity<>(createdEmployee, HttpStatus.OK);
+	}
 
     @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteEmployeeById(@PathVariable String id);
+    ResponseEntity<String> deleteEmployeeById(@PathVariable String id){
+		employeeService.deleteEmployeeById(id);
+		CustomResponse response = new CustomResponse("successfully! deleted Record");
+		return new ResponseEntity<>(createdEmployee, HttpStatus.OK);	
+	}
 
 }
